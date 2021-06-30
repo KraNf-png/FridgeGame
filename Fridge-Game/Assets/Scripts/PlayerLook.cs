@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class PlayerLook : MonoBehaviour
 {
-    [Header("Player Mouse Sensitivity")]
-    [SerializeField] private float senxX = 100f;
-    [SerializeField] private float senxY = 100f;
 
-    Camera cam;
+    [SerializeField] private float sensX = 100f;
+    [SerializeField] private float sensY = 100f;
+
+    [SerializeField] Transform cam = null;
+    [SerializeField] Transform orientation = null;
 
     float mouseX;
     float mouseY;
@@ -20,29 +21,21 @@ public class PlayerLook : MonoBehaviour
 
     private void Start()
     {
-        cam = GetComponentInChildren<Camera>();
-
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 
     private void Update()
     {
-        MyInput();
-
-        cam.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
-        transform.rotation = Quaternion.Euler(0, yRotation, 0);
-    }
-
-    void MyInput()
-    {
         mouseX = Input.GetAxisRaw("Mouse X");
         mouseY = Input.GetAxisRaw("Mouse Y");
 
-        yRotation += mouseX * senxX * multiplier;
-        xRotation -= mouseY * senxY * multiplier;
+        yRotation += mouseX * sensX * multiplier;
+        xRotation -= mouseY * sensY * multiplier;
 
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
-    }
 
+        cam.transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+        orientation.transform.rotation = Quaternion.Euler(0, yRotation, 0);
+    }
 }

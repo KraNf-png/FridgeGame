@@ -6,6 +6,8 @@ public class PlayerMovement : MonoBehaviour
 {
     float playerHeight = 2f;
 
+    [SerializeField] Transform orientation;
+
     [Header("Player Movement Settings")]
     [SerializeField] float moveSpeed = 6f;
     [SerializeField] float airMultiplier = 0.4f;
@@ -23,12 +25,33 @@ public class PlayerMovement : MonoBehaviour
     float horizontalMovement;
     float verticalMovement;
 
+    [Header("Ground Direction")]
+    [SerializeField] LayerMask groundMask;
     bool isGrounded;
+    float groundDistance = 0.4f;
 
     Vector3 moveDirection;
+    Vector3 slopeMoveDirection;
 
     Rigidbody rb;
 
+    RaycastHit slopeHit;
+
+    private bool OnSlope()
+    {
+        if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight /2 + 0.5f))
+        {
+            if (slopeHit.normal != Vector3.up)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return false;
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -39,7 +62,7 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 +   0.1f);
+        isGrounded = Physics.CheckSphere(transform.position - new Vector3(0, 1, 0), groundDistance, groundMask);
 
         MyInput();
         ControlDrag();
@@ -48,6 +71,8 @@ public class PlayerMovement : MonoBehaviour
         {
             Jump();
         }
+
+        slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
     }
 
     void ControlDrag()
@@ -67,7 +92,7 @@ public class PlayerMovement : MonoBehaviour
         horizontalMovement = Input.GetAxisRaw("Horizontal");
         verticalMovement = Input.GetAxisRaw("Vertical");
 
-        moveDirection = transform.forward * verticalMovement + transform.right * horizontalMovement;
+        moveDirection = orientation.forward * verticalMovement + orientation.right * horizontalMovement;
     }
 
     void Jump()
@@ -82,9 +107,13 @@ public class PlayerMovement : MonoBehaviour
 
     void MovePlayer()
     {
-        if (isGrounded)
+        if (isGrounded && !OnSlope())
         {
             rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
+        }
+        else if (isGrounded && OnSlope())
+        {
+            rb.AddForce(slopeMoveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
         }
         else if (!isGrounded)
         {
