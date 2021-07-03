@@ -7,7 +7,7 @@ public class DragAndDrop : MonoBehaviour
     [SerializeField] Camera cam;
     [SerializeField] float grabDistance = 5f, dropDistance = 10f, lerpSpeed = 200f;
     [SerializeField] Transform objectHolder;
-    GameObject gameObject;
+    [SerializeField] Transform objectCube;
 
     Rigidbody grabbedRB;
     // Start is called before the first frame update
@@ -47,7 +47,7 @@ public class DragAndDrop : MonoBehaviour
                     grabbedRB = hit.collider.gameObject.GetComponent<Rigidbody>();
                     if (grabbedRB)
                     {
-                        grabbedRB.velocity = (objectHolder.transform.position - grabbedRB.transform.position);
+                        grabbedRB.velocity = (objectHolder.transform.position - objectCube.transform.position);
                         grabbedRB.isKinematic = true;
                     }
                 }
