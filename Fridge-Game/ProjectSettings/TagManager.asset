@@ -7,6 +7,7 @@ TagManager:
   - Heavy
   - Interact
   - Door
+  - InteractItem
   layers:
   - Default
   - TransparentFX
