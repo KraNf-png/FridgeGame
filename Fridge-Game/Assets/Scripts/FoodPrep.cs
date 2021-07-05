@@ -4,15 +4,21 @@ using UnityEngine;
 
 public class FoodPrep : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField] GameObject burger;
 
-    // Update is called once per frame
-    void Update()
+    private int timer = 0;
+
+    Vector3 burgerScale = new Vector3(0.16835f, 0.16835f, 0.16835f);
+    private void OnTriggerEnter(Collider other)
     {
         
+        if (other.name == "bread" && timer < 1)
+        {
+            timer++;
+            Destroy(other.gameObject);
+            Destroy(this.gameObject);
+            this.burger.transform.localScale = burgerScale;
+            Instantiate(burger, this.gameObject.transform.position, Quaternion.identity);
+        }
     }
 }
